@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"  # Map host port 2181 to container port 2181 (default Zookeeper port)
+
+  postgres:
+    image: postgres
+    ports:
+      - "5434:5432" # Map host port 5434 to container port 5432 (default Postgres port)
+    environment:
+      - POSTGRES_PASSWORD=adminpassword  # Set your desired password
+
+  kafka:
+    image: confluentinc/cp-kafka:latest  # You can specify a version if needed
+    ports:
+      - "9092:9092"  # Map host port 9092 to container port 9092 (default Kafka port)
+    environment:
+      - KAFKA_BROKER_ID=1  # Set broker ID (usually 1 for single broker)
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181  # Connect to Zookeeper on port 2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092  # Advertise listener on the container port
+
+volumes:
+  postgres-data:  # Optional volume to persist Postgres data
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./postgres-data  # Adjust path as needed
